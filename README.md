@@ -1,7 +1,7 @@
-'''
-setContent {
-RememberStateTheme {
-val navController = rememberNavController()
+
+    setContent {
+    RememberStateTheme {
+    val navController = rememberNavController()
 
                 NavHost(navController, startDestination = "items") {
                     composable("items") {
@@ -18,12 +18,12 @@ val navController = rememberNavController()
                 }
             }
         }
-''''
 
-'''
-LazyColumn(modifier = Modifier.fillMaxSize()) {
-items(items) { item ->
-val state = states[item]
+
+
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+    items(items) { item ->
+    val state = states[item]
 
                 key(item) {
                     Item(index = item,
@@ -39,7 +39,7 @@ val state = states[item]
                 Divider()
             }
         }
-''
+        
 
 If we create state like val state = remember(it) { mutableStateOf(ItemState()) }
 then we loose expanded state while scrolling
