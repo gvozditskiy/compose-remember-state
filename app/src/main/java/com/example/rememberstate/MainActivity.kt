@@ -62,10 +62,21 @@ class MainActivity : ComponentActivity() {
 fun Greeting(
     onItemClick: (Int) -> Unit
 ) {
+    val items = remember { (0..100).toList() }
+
     Surface(color = MaterialTheme.colors.background) {
+        val states = items.map { remember(it) { mutableStateOf(ItemState()) } }
+
         LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items((0..100).toList()) { item ->
-                val state = remember(item) { mutableStateOf(ItemState()) }
+            items(items) { item ->
+                // If we create state here like val state = remember(it) { mutableStateOf(ItemState()) }
+                // then we loose expanded state while scrolling
+                // If we lift up states generating higher before LazyColumn then expand state
+                // is saving properly
+                //
+                // But when we expand an item, click the button and then go back to items we loose
+                // expanded state
+                val state = states[item]
 
                 key(item) {
                     Item(index = item,
