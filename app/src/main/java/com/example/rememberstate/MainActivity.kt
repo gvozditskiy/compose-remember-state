@@ -1,6 +1,7 @@
 package com.example.rememberstate
 
 import android.os.Bundle
+import android.os.Parcelable
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -20,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,6 +33,8 @@ import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.navigate
 import androidx.navigation.compose.rememberNavController
 import com.example.rememberstate.ui.theme.RememberStateTheme
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 
 class MainActivity : ComponentActivity() {
 
@@ -69,14 +73,7 @@ fun Greeting(
 
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(items) { item ->
-                // If we create state here like val state = remember(it) { mutableStateOf(ItemState()) }
-                // then we loose expanded state while scrolling
-                // If we lift up states generating higher before LazyColumn then expand state
-                // is saving properly
-                //
-                // But when we expand an item, click the button and then go back to items we loose
-                // expanded state
-                val state = states[item]
+                val state = rememberSaveable(item) { mutableStateOf(ItemState()) }
 
                 key(item) {
                     Item(index = item,
@@ -125,11 +122,13 @@ fun Item(
     }
 }
 
-class ItemState {
+@Parcelize
+class ItemState : Parcelable {
 
     val expanded: Boolean
         get() = _expanded.value
 
+    @IgnoredOnParcel
     private val _expanded = mutableStateOf(false)
 
     fun changeState() {
